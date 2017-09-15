@@ -1785,8 +1785,7 @@ static uint8_t section_data(NeAACDecStruct *hDecoder, ic_stream *ics, bitfile *l
 #ifdef ERROR_RESILIENCE
             }
 #endif
-            while ((sect_len_incr == sect_esc_val) /* &&
-                (k+sect_len < ics->max_sfb)*/)
+            while (sect_len_incr == sect_esc_val)
             {
                 sect_len += sect_len_incr;
                 sect_len_incr = (uint8_t)faad_getbits(ld, sect_bits

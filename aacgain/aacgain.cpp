@@ -62,7 +62,6 @@
 }
 
 GainDataPtr theGainData;
-static const uint32_t verbosity = MP4_DETAILS_ERROR|MP4_DETAILS_WARNING;
 
 //replay_gain tags
 static char *RGTags[num_rg_tags] = 
@@ -82,18 +81,15 @@ typedef struct
 } PreserveTimestamp, *PreserveTimestampPtr;
 
 //used to suppress bogus error messages from mp4lib
-static void mp4v2_lib_message_func(int loglevel, const char* lib, const char* fmt, ...)
+static void mp4v2_lib_message_func(MP4LogLevel loglevel, const char* fmt, va_list ap)
 {
 	char buf[512];
-	va_list ap;
-	va_start(ap, fmt);
 	vsnprintf(buf, sizeof(buf), fmt, ap);
 	//ignore this mp4v2 error message:
 	if (!strstr(buf, "no such property - moov.iods.audioProfileLevelId"))
 	{
 		fprintf(stderr, "mp4v2 error: %s\n", buf);
 	}
-	va_end(ap);
 }
 
 static char* temp_file_name(const char* input_file_name)
@@ -137,7 +133,7 @@ static char* temp_file_name(const char* input_file_name)
 
 static MP4FileHandle mp4_open_ro(GainDataPtr gd, char *mp4_file_name)
 {
-	MP4FileHandle fh = MP4Read(mp4_file_name, verbosity);
+	MP4FileHandle fh = MP4Read(mp4_file_name);
 	if (fh) 
 	{
 		gd->mp4File = fh;
@@ -148,7 +144,7 @@ static MP4FileHandle mp4_open_ro(GainDataPtr gd, char *mp4_file_name)
 		gd->itmfList = MP4ItmfGetItems(gd->mp4File);
 		if (!gd->itmfList)
 		{
-			MP4Close(fh);
+			MP4Close(fh, MP4_CLOSE_DO_NOT_COMPUTE_BITRATE);
 			return NULL;
 		}
 	}
@@ -158,7 +154,7 @@ static MP4FileHandle mp4_open_ro(GainDataPtr gd, char *mp4_file_name)
 static void mp4_open_rw(GainDataPtr gd, char *mp4_file_name)
 {
 	static const char *msg = "Unable to open file %s for writing.\n";
-	gd->mp4File = MP4Modify(gd->temp_name, verbosity);
+	gd->mp4File = MP4Modify(gd->temp_name, 0);
 	if (!gd->mp4File)
 	{
 		fprintf(stderr, msg, gd->temp_name);
@@ -176,7 +172,7 @@ static void mp4_close(GainDataPtr gd)
 {
 	if (gd->mp4File)
 	{
-		MP4Close(gd->mp4File);
+		MP4Close(gd->mp4File, MP4_CLOSE_DO_NOT_COMPUTE_BITRATE);
 		MP4ItmfItemListFree((MP4ItmfItemList *)gd->itmfList);
 		gd->mp4File = NULL;
 		gd->itmfList = NULL;
@@ -506,7 +502,7 @@ int aac_open(char *mp4_file_name, int use_temp, int preserve_timestamp, AACGainH
     unsigned char *buffer = NULL;
     unsigned int buffer_size = 0;
 
-	MP4SetLibFunc(mp4v2_lib_message_func);
+	MP4SetLogCallback(&mp4v2_lib_message_func);
 
 	MP4FileHandle fh = mp4_open_ro(gd, mp4_file_name);
 	if (fh)

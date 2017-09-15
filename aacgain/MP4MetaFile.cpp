@@ -27,7 +27,7 @@ using namespace mp4v2::impl;
 class MyMP4Track : public MP4Track
 {
 private:
-	MyMP4Track(MP4File* pFile, MP4Atom* pTrakAtom)
+	MyMP4Track(MP4File& pFile, MP4Atom& pTrakAtom)
 	: MP4Track(pFile, pTrakAtom){} //prevent compiler warning
 
 public:
@@ -40,7 +40,7 @@ public:
 void MP4MetaFile::ModifySampleByte(MP4TrackId trackId, MP4SampleId sampleId, uint8_t byte,
                                    uint32_t byteOffset, uint8_t bitOffset)
 {
-    ProtectWriteOperation("MP4MetaFile::ModifySampleByte");
+    ProtectWriteOperation("MP4MetaFile::ModifySampleByte", __LINE__, __FUNCTION__);
 
     uint64_t sampleOffset = static_cast<MyMP4Track *>(m_pTracks[FindTrackIndex(trackId)])->
             GetSampleFileOffset(sampleId);
