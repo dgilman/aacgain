@@ -1,3 +1,5 @@
 *.o
 *.lo
 *.swp
+faad2/
+mp4v2/
