@@ -19,8 +19,12 @@ echo "travis_fold:end:faad2"
 
 # delete mpglibDBL/config.h?
 cd "$AACGAIN_ROOT"
+echo "travis_fold:start:aacgain_autoreconf"
 autoreconf -vif
+echo "travis_fold:end:aacgain_autoreconf"
+echo "travis_fold:start:aacgain_configure"
 ./configure
+echo "travis_fold:end:aacgain_configure"
 make
 
 "$AACGAIN_ROOT/aacgain/aacgain" -h
