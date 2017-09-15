@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="aacgain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="decoder.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="syntax.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MP4MetaFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="aacgain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="aacgainf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="aacgaini.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MP4MetaFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Readme" />
+    <None Include="mp4v2.patch" />
+    <None Include="linux\README.linux">
+      <Filter>Linux Build Files</Filter>
+    </None>
+    <None Include="linux\configure.ac">
+      <Filter>Linux Build Files</Filter>
+    </None>
+    <None Include="linux\Makefile.am.mp3gain">
+      <Filter>Linux Build Files</Filter>
+    </None>
+    <None Include="linux\Makefile.am.mpglibDBL">
+      <Filter>Linux Build Files</Filter>
+    </None>
+    <None Include="linux\mp3gain.patch">
+      <Filter>Linux Build Files</Filter>
+    </None>
+    <None Include="linux\prepare.sh">
+      <Filter>Linux Build Files</Filter>
+    </None>
+    <None Include="Makefile.am">
+      <Filter>Linux Build Files</Filter>
+    </None>
+    <None Include="linux\Makefile.am.topsrcdir">
+      <Filter>Linux Build Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{5bd4a0d4-6d56-4743-aca8-6631eef6c541}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{579d93ef-96b2-446e-97a1-2a048500ea51}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Linux Build Files">
+      <UniqueIdentifier>{8c120fff-a2f7-4c07-b06c-c9465fe4fb51}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

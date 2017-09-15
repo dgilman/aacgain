@@ -1,0 +1,317 @@
+Index: lib/mp4v2/atom_free.cpp
+===================================================================
+RCS file: /cvsroot/mpeg4ip/mpeg4ip/lib/mp4v2/atom_free.cpp,v
+retrieving revision 1.4
+diff -u -r1.4 atom_free.cpp
+--- lib/mp4v2/atom_free.cpp	1 Nov 2001 19:07:02 -0000	1.4
++++ lib/mp4v2/atom_free.cpp	10 Dec 2004 05:17:43 -0000
+@@ -37,7 +37,10 @@
+ 
+ 	bool use64 = (GetSize() > (0xFFFFFFFF - 8)); 
+ 	BeginWrite(use64);
+-	m_pFile->SetPosition(m_pFile->GetPosition() + GetSize());
++	for (uint64_t ix = 0; ix < GetSize(); ix++) {
++		m_pFile->WriteUInt8(0);
++	}
++	//m_pFile->SetPosition(m_pFile->GetPosition() + GetSize());
+ 	FinishWrite(use64);
+ }
+ 
+Index: lib/mp4v2/atom_meta.cpp
+===================================================================
+RCS file: /cvsroot/mpeg4ip/mpeg4ip/lib/mp4v2/atom_meta.cpp,v
+retrieving revision 1.2
+diff -u -r1.2 atom_meta.cpp
+--- lib/mp4v2/atom_meta.cpp	6 Jan 2004 19:28:31 -0000	1.2
++++ lib/mp4v2/atom_meta.cpp	10 Dec 2004 05:17:44 -0000
+@@ -166,6 +166,12 @@
+     ExpectChildAtom("data", Required, OnlyOne);
+ }
+ 
++MP4GrpAtom::MP4GrpAtom()
++    : MP4Atom("\251grp")
++{
++    ExpectChildAtom("data", Required, OnlyOne);
++}
++
+ MP4TooAtom::MP4TooAtom()
+     : MP4Atom("\251too")
+ {
+Index: lib/mp4v2/atoms.h
+===================================================================
+RCS file: /cvsroot/mpeg4ip/mpeg4ip/lib/mp4v2/atoms.h,v
+retrieving revision 1.13
+diff -u -r1.13 atoms.h
+--- lib/mp4v2/atoms.h	17 Aug 2004 21:36:55 -0000	1.13
++++ lib/mp4v2/atoms.h	10 Dec 2004 05:17:44 -0000
+@@ -561,6 +561,11 @@
+ 	MP4GenAtom();
+ };
+ 
++class MP4GrpAtom : public MP4Atom {
++public:
++	MP4GrpAtom();
++};
++
+ class MP4TooAtom : public MP4Atom {
+ public:
+ 	MP4TooAtom();
+Index: lib/mp4v2/mp4.cpp
+===================================================================
+RCS file: /cvsroot/mpeg4ip/mpeg4ip/lib/mp4v2/mp4.cpp,v
+retrieving revision 1.41
+diff -u -r1.41 mp4.cpp
+--- lib/mp4v2/mp4.cpp	17 Aug 2004 21:36:55 -0000	1.41
++++ lib/mp4v2/mp4.cpp	10 Dec 2004 05:17:46 -0000
+@@ -3581,6 +3581,34 @@
+   return false;
+ }
+  
++extern "C" bool MP4SetMetadataGrouping(MP4FileHandle hFile, const char *grouping)
++{
++  if (MP4_IS_VALID_FILE_HANDLE(hFile)) {
++    try {
++      return ((MP4File*)hFile)->SetMetadataGrouping(grouping);
++    }
++    catch (MP4Error* e) {
++      PRINT_ERROR(e);
++      delete e;
++    }
++  }
++  return false;
++}
++ 
++extern "C" bool MP4GetMetadataGrouping(MP4FileHandle hFile, char **grouping)
++{
++  if (MP4_IS_VALID_FILE_HANDLE(hFile)) {
++    try {
++      return ((MP4File*)hFile)->GetMetadataGrouping(grouping);
++    }
++    catch (MP4Error* e) {
++      PRINT_ERROR(e);
++      delete e;
++    }
++  }
++  return false;
++}
++ 
+ extern "C" bool MP4SetMetadataTempo(MP4FileHandle hFile, u_int16_t tempo)
+ {
+   if (MP4_IS_VALID_FILE_HANDLE(hFile)) {
+Index: lib/mp4v2/mp4.h
+===================================================================
+RCS file: /cvsroot/mpeg4ip/mpeg4ip/lib/mp4v2/mp4.h,v
+retrieving revision 1.45
+diff -u -r1.45 mp4.h
+--- lib/mp4v2/mp4.h	28 Oct 2004 22:44:17 -0000	1.45
++++ lib/mp4v2/mp4.h	10 Dec 2004 05:17:47 -0000
+@@ -1099,6 +1099,8 @@
+ 			u_int16_t* disk, u_int16_t* totalDisks);
+ bool MP4SetMetadataGenre(MP4FileHandle hFile, const char *genre);
+ bool MP4GetMetadataGenre(MP4FileHandle hFile, char **genre);
++bool MP4SetMetadataGrouping(MP4FileHandle hFile, const char *grouping);
++bool MP4GetMetadataGrouping(MP4FileHandle hFile, char **grouping);
+ bool MP4SetMetadataTempo(MP4FileHandle hFile, u_int16_t tempo);
+ bool MP4GetMetadataTempo(MP4FileHandle hFile, u_int16_t* tempo);
+ bool MP4SetMetadataCompilation(MP4FileHandle hFile, u_int8_t cpl);
+Index: lib/mp4v2/mp4atom.cpp
+===================================================================
+RCS file: /cvsroot/mpeg4ip/mpeg4ip/lib/mp4v2/mp4atom.cpp,v
+retrieving revision 1.25
+diff -u -r1.25 mp4atom.cpp
+--- lib/mp4v2/mp4atom.cpp	30 Nov 2004 00:27:18 -0000	1.25
++++ lib/mp4v2/mp4atom.cpp	10 Dec 2004 05:17:48 -0000
+@@ -367,6 +367,7 @@
+ static const char too[5]={0251,'t', 'o', 'o', '\0'};
+ static const char cmt[5]={0251,'c', 'm', 't', '\0'};
+ static const char gen[5]={0251,'g', 'e', 'n', '\0'};
++static const char grp[5]={0251,'g', 'r', 'p', '\0'};
+       if (ATOMID(type) == ATOMID(name)) {
+  	pAtom = new MP4NamAtom();
+       } else if (ATOMID(type) == ATOMID(art)) { /* Apple iTunes */
+@@ -383,6 +384,8 @@
+  	pAtom = new MP4CmtAtom();
+       } else if (ATOMID(type) == ATOMID(gen)) { /* Apple iTunes */
+ 	pAtom = new MP4GenAtom();
++      } else if (ATOMID(type) == ATOMID(grp)) { /* Apple iTunes */
++	pAtom = new MP4GrpAtom();
+       }
+       break;
+     }
+Index: lib/mp4v2/mp4file.h
+===================================================================
+RCS file: /cvsroot/mpeg4ip/mpeg4ip/lib/mp4v2/mp4file.h,v
+retrieving revision 1.39
+diff -u -r1.39 mp4file.h
+--- lib/mp4v2/mp4file.h	17 Aug 2004 21:36:56 -0000	1.39
++++ lib/mp4v2/mp4file.h	10 Dec 2004 05:17:48 -0000
+@@ -549,6 +549,7 @@
+ 	bool SetMetadataTrack(u_int16_t track, u_int16_t totalTracks);
+ 	bool SetMetadataDisk(u_int16_t disk, u_int16_t totalDisks);
+ 	bool SetMetadataGenre(const char *value);
++	bool SetMetadataGrouping(const char *value);
+ 	bool SetMetadataTempo(u_int16_t tempo);
+ 	bool SetMetadataCompilation(u_int8_t compilation);
+ 	bool SetMetadataCoverArt(u_int8_t *coverArt, u_int32_t size);
+@@ -571,6 +572,7 @@
+ 	bool GetMetadataTrack(u_int16_t* track, u_int16_t* totalTracks);
+ 	bool GetMetadataDisk(u_int16_t* disk, u_int16_t* totalDisks);
+ 	bool GetMetadataGenre(char **value);
++	bool GetMetadataGrouping(char **value);
+ 	bool GetMetadataTempo(u_int16_t* tempo);
+ 	bool GetMetadataCompilation(u_int8_t* compilation);
+ 	bool GetMetadataCoverArt(u_int8_t **coverArt, u_int32_t* size);
+Index: lib/mp4v2/mp4meta.cpp
+===================================================================
+RCS file: /cvsroot/mpeg4ip/mpeg4ip/lib/mp4v2/mp4meta.cpp,v
+retrieving revision 1.4
+diff -u -r1.4 mp4meta.cpp
+--- lib/mp4v2/mp4meta.cpp	15 Apr 2004 22:32:40 -0000	1.4
++++ lib/mp4v2/mp4meta.cpp	10 Dec 2004 05:17:50 -0000
+@@ -35,6 +35,7 @@
+  - ©too : Tool(s) used to create the file (string)
+  - ©cmt : Comment (string)
+  - ©gen : Custom genre (string)
++ - ©grp : Grouping (string)
+  - trkn : Tracknumber (8 byte string)
+            16 bit: empty
+            16 bit: tracknumber
+@@ -701,6 +702,49 @@
+     return false;
+ }
+ 
++bool MP4File::SetMetadataGrouping(const char* value)
++{
++    const char *s = "moov.udta.meta.ilst.\251grp.data";
++    MP4BytesProperty *pMetadataProperty = NULL;
++    MP4Atom *pMetaAtom = NULL;
++    
++    pMetaAtom = m_pRootAtom->FindAtom(s);
++
++    if (!pMetaAtom)
++    {
++        if (!CreateMetadataAtom("\251grp"))
++            return false;
++
++        pMetaAtom = m_pRootAtom->FindAtom(s);
++    }
++
++    pMetaAtom->FindProperty("data.metadata", (MP4Property**)&pMetadataProperty);
++    ASSERT(pMetadataProperty);
++
++    pMetadataProperty->SetValue((u_int8_t*)value, strlen(value));
++
++    return true;
++}
++
++bool MP4File::GetMetadataGrouping(char** value)
++{
++    unsigned char *val = NULL;
++    u_int32_t valSize = 0;
++    const char *s = "moov.udta.meta.ilst.\251grp.data.metadata";
++    GetBytesProperty(s, (u_int8_t**)&val, &valSize);
++
++    if (valSize > 0)
++    {
++        *value = (char*)malloc((valSize+1)*sizeof(unsigned char));
++        memset(*value, 0, (valSize+1)*sizeof(unsigned char));
++        memcpy(*value, val, valSize*sizeof(unsigned char));
++        return true;
++    } else {
++        *value = NULL;
++        return false;
++    }
++}
++
+ bool MP4File::SetMetadataTempo(u_int16_t tempo)
+ {
+     unsigned char t[3];
+Index: lib/mp4v2/util/mp4info.cpp
+===================================================================
+RCS file: /cvsroot/mpeg4ip/mpeg4ip/lib/mp4v2/util/mp4info.cpp,v
+retrieving revision 1.17
+diff -u -r1.17 mp4info.cpp
+--- lib/mp4v2/util/mp4info.cpp	14 Jun 2004 22:22:16 -0000	1.17
++++ lib/mp4v2/util/mp4info.cpp	10 Dec 2004 05:17:50 -0000
+@@ -126,6 +126,10 @@
+ 		    fprintf(stdout, " Metadata Genre: %s\n", value);
+ 		    free(value);
+ 		  }
++		  if (MP4GetMetadataGrouping(mp4file, &value) && value != NULL) {
++		    fprintf(stdout, " Metadata Grouping: %s\n", value);
++		    free(value);
++		  }
+ 		  if (MP4GetMetadataTempo(mp4file, &numvalue)) {
+ 		    fprintf(stdout, " Metadata Tempo: %u\n", numvalue);
+ 		  }
+Index: lib/mp4v2/util/mp4tags.cpp
+===================================================================
+RCS file: /cvsroot/mpeg4ip/mpeg4ip/lib/mp4v2/util/mp4tags.cpp,v
+retrieving revision 1.3
+diff -u -r1.3 mp4tags.cpp
+--- lib/mp4v2/util/mp4tags.cpp	7 Apr 2004 22:03:49 -0000	1.3
++++ lib/mp4v2/util/mp4tags.cpp	10 Dec 2004 05:17:53 -0000
+@@ -28,13 +28,14 @@
+ #define OPT_DISK    'd'
+ #define OPT_DISKS   'D'
+ #define OPT_GENRE   'g'
++#define OPT_GROUPING 'G'
+ #define OPT_SONG    's'
+ #define OPT_TRACK   't'
+ #define OPT_TRACKS  'T'
+ #define OPT_WRITER  'w'    /* _composer_ */
+ #define OPT_YEAR    'y'
+ 
+-#define OPT_STRING  "hvA:a:b:c:d:D:g:s:t:T:w:y:"
++#define OPT_STRING  "hvA:a:b:c:d:D:g:G:s:t:T:w:y:"
+ 
+ static const char* help_text =
+ "OPTION... FILE...\n"
+@@ -42,18 +43,19 @@
+ "\n"
+ "  -h, -help         Display this help text and exit\n"
+ "  -v, -version      Display version information and exit\n"
+-"  -A, -album   STR  Set the album title\n"
+-"  -a, -artist  STR  Set the artist information\n"
+-"  -b, -tempo   NUM  Set the tempo (beats per minute)\n"
+-"  -c, -comment STR  Set a general comment\n"
+-"  -d, -disk    NUM  Set the disk number\n"
+-"  -D, -disks   NUM  Set the number of disks\n"
+-"  -g, -genre   STR  Set the genre name\n"
+-"  -s, -song    STR  Set the song title\n"
+-"  -t, -track   NUM  Set the track number\n"
+-"  -T, -tracks  NUM  Set the number of tracks\n"
+-"  -w, -writer  STR  Set the composer information\n"
+-"  -y, -year    NUM  Set the year\n"
++"  -A, -album    STR  Set the album title\n"
++"  -a, -artist   STR  Set the artist information\n"
++"  -b, -tempo    NUM  Set the tempo (beats per minute)\n"
++"  -c, -comment  STR  Set a general comment\n"
++"  -d, -disk     NUM  Set the disk number\n"
++"  -D, -disks    NUM  Set the number of disks\n"
++"  -g, -genre    STR  Set the genre name\n"
++"  -G, -grouping STR  Set the grouping name\n"
++"  -s, -song     STR  Set the song title\n"
++"  -t, -track    NUM  Set the track number\n"
++"  -T, -tracks   NUM  Set the number of tracks\n"
++"  -w, -writer   STR  Set the composer information\n"
++"  -y, -year     NUM  Set the year\n"
+ "\n";
+ 
+ 
+@@ -69,6 +71,7 @@
+     { "disk",    1, 0, OPT_DISK    },
+     { "disks",   1, 0, OPT_DISKS   },
+     { "genre",   1, 0, OPT_GENRE   },
++    { "grouping",1, 0, OPT_GROUPING},
+     { "song",    1, 0, OPT_SONG    },
+     { "tempo",   1, 0, OPT_TEMPO   },
+     { "track",   1, 0, OPT_TRACK   },
+@@ -185,6 +188,7 @@
+         case OPT_ARTIST:  MP4SetMetadataArtist(h, tags[i]); break;
+         case OPT_COMMENT: MP4SetMetadataComment(h, tags[i]); break;
+         case OPT_GENRE:   MP4SetMetadataGenre(h, tags[i]); break;
++        case OPT_GROUPING:MP4SetMetadataGrouping(h, tags[i]); break;
+         case OPT_SONG:    MP4SetMetadataName(h, tags[i]); break;
+         case OPT_WRITER:  MP4SetMetadataWriter(h, tags[i]); break;
+         case OPT_YEAR:    MP4SetMetadataYear(h, tags[i]); break;

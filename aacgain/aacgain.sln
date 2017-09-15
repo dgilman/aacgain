@@ -1,0 +1,31 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "aacgain", "aacgain.vcxproj", "{A0EE08F7-FE03-472E-9A9D-D63C361454CE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libfaad", "..\faad2\libfaad\libfaad.vcxproj", "{BC3EFE27-9015-4C9C-AD3C-72B3B7ED2114}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mp3gain", "mp3gain.vcxproj", "{E0520611-1986-49CE-BF13-8A9E38255F6B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A0EE08F7-FE03-472E-9A9D-D63C361454CE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A0EE08F7-FE03-472E-9A9D-D63C361454CE}.Debug|Win32.Build.0 = Debug|Win32
+		{A0EE08F7-FE03-472E-9A9D-D63C361454CE}.Release|Win32.ActiveCfg = Release|Win32
+		{A0EE08F7-FE03-472E-9A9D-D63C361454CE}.Release|Win32.Build.0 = Release|Win32
+		{BC3EFE27-9015-4C9C-AD3C-72B3B7ED2114}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BC3EFE27-9015-4C9C-AD3C-72B3B7ED2114}.Debug|Win32.Build.0 = Debug|Win32
+		{BC3EFE27-9015-4C9C-AD3C-72B3B7ED2114}.Release|Win32.ActiveCfg = Release|Win32
+		{BC3EFE27-9015-4C9C-AD3C-72B3B7ED2114}.Release|Win32.Build.0 = Release|Win32
+		{E0520611-1986-49CE-BF13-8A9E38255F6B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E0520611-1986-49CE-BF13-8A9E38255F6B}.Debug|Win32.Build.0 = Debug|Win32
+		{E0520611-1986-49CE-BF13-8A9E38255F6B}.Release|Win32.ActiveCfg = Release|Win32
+		{E0520611-1986-49CE-BF13-8A9E38255F6B}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

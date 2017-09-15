@@ -1,0 +1,338 @@
+/*
+** aacgain - modifications to mp3gain to support mp4/m4a files
+** Copyright (C) 2004-2010 David Lasker, Altos Design, Inc.
+**
+** This program is free software; you can redistribute it and/or modify
+** it under the terms of the GNU General Public License as published by
+** the Free Software Foundation; either version 2 of the License, or
+** (at your option) any later version.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+**
+** You should have received a copy of the GNU General Public License
+** along with this program; if not, write to the Free Software
+** Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+**/
+
+AACGAIN VERSION 1.9
+
+AACgain is a modification to Glen Sawyer's mp3gain, to support AAC 
+(mp4/m4a/QuickTime) files as well as mp3 files. If you are not familiar with
+mp3gain, stop reading this, and go to http://mp3gain.sourceforge.net
+
+USAGE NOTES
+
+1. BACK UP YOUR MUSIC FILES BEFORE USING AACGAIN! UNLIKE MP3GAIN, AACGAIN IS
+   NOT COMPLETELY REVERSABLE. THE UNDO OPTION IS INTENDED TO RESTORE A MUSIC
+   FILE TO BE FUNCTIONALLY EQUIVALENT TO ITS ORIGINAL STATE, BUT IT WILL NOT
+   BE BIT-FOR-BIT IDENTICAL TO THE ORIGINAL FILE. IT IS POSSIBLE FOR APPLE
+   TO CHANGE THE ITUNES MUSIC FILE FORMAT IN WAYS THAT ARE INCOMPATIBLE
+   WITH AACGAIN, RESULTING IN CORRUPTED MUSIC FILES THAT CANNOT BE RESTORED
+   TO THEIR ORIGINAL STATE. I AM NOT RESPONSIBLE FOR DAMAGED FILES.
+2. AACGain supports files in the mp4/Quicktime file format. These files
+   usually have a file extension of .mp4, .m4a, or m4v. Raw AAC files,
+   files encoded with HE-AAC/SBR, or Apple Lossless files are not supported.
+3. DRM'ed files purchased from the iTunes music store are not supported. You
+   may convert these to .m4a format by burning them to a CD-ROM and importing
+   them back into iTunes, or by using one of the underground methods to
+   losslessly convert them to .m4a.
+4. AACGain takes the same command line options as mp3gain - no
+   changes have been made to the command usage.
+5. If you rename the AACGain.exe executable to mp3gain.exe, it will work 
+   with the Visual Basic front-end MP3GainGUI.exe.
+6. When calculating or applying album gain, you may mix aac and mp3 files
+   in the same command.
+7. The /t (use temp file) option is ignored for aac files. A temp file
+   is always used. The mp4v2 Optimize function is used to copy the
+   processed file back to the original name. Experience has shown that this
+   is required for processed music files to play on older iPods.
+8. The /w (wrap) flag is ignored for aac files, since allowing an aac file
+   to wrap will leave it in an unplayable state.
+9. The /f (assume input file is an MPEG 2 Layer III) option is ignored
+   for mp4/m4a/m4v files. If a file starts with a 'ftyp' atom, it is assumed 
+   to be an mp4 container, even if /f was specified.
+10. The /s i (id2v3) option is ignored for mp4/m4a/m4v files. The tags for
+    these files are stored in iTunes metadata format as described below.
+11. The following metadata tags will be added to your mp4/m4a files:
+     - replaygain_track_gain
+     - replaygain_album_gain
+     - replaygain_track_peak
+     - replaygain_album_peak
+     - replaygain_track_minmax
+     - replaygain_album_minmax
+     - replaygain_undo
+    These are all free-form metadata tags (moov.udta.meta.ilst.----)
+    with 'data' text fields in the same format as the mp3gain
+    equivalents. You may use AtomicParsley (download from sourceforge)
+    to view the tags.
+    
+SUPPPORT
+This is free software. No support is provided. 
+
+You may try to post questions on the Hydrogen Audio AAC Tech forum:
+http://www.hydrogenaudio.org/forums/index.php?showforum=14
+I regularly monitor this forum, and use it to announce new releases
+of aacgain.
+
+You may email me questions, but there is no guarantee of a response.
+If you have what you believe to be a valid .m4a/.mp4 file that is 
+not processed correctly by aacgain, please attach it to your email.
+I do not support the original mp3gain code.
+
+WHAT'S NEW IN VERSION 1.9
+a) Fixed a bug in mp4v2 which caused iTunes music video files
+   to fail with "not a valid mp4/m4a file" error.
+b) Gives a more meaningful error message when attempting to
+   process Apple Lossless files.
+c) Built with updated mp4v2 from Google Code, which should build
+   error-free on modern Windows and Linux systems.
+d) Built with updated faad2 code, which should build error-free
+   on modern Windows and Linux systems.
+d) Built with latest mp3gain version 1.5.2 sources checked into CVS,
+   which include id3v2 tag support.
+e) MSVC++ solution and project files have been converted to Visual
+   C++ 2010 Express Edition.
+    
+WHAT'S NEW IN VERSION 1.8
+a) Built with mpeg4ip/mp4v2 version 1.6.1. aacgain 1.7.1 was built with
+   version 1.5.20. mp4v2 version 1.6.1 corrects problems that corrupted 
+   video files containing Quicktime chapter markers.
+b) Built with latest mp3gain version 1.4.7 sources checked into CVS. 
+   The mp3gain changes made since 1.7.1 support sample rates up to 96000.
+   Previous versions had a maxmimum sample rate of 48000.
+c) Ignores faad2 "scalefactor out of range" errors. These errors resulted
+   in "invalid file format" errors on apparently good files.
+
+WHAT'S NEW IN VERSION 1.7.1
+a) MSVC++ solution and project files have been converted to Visual
+   C++ 2005 Express Edition. Other than the version number, no other 
+   source code changes have been made.
+
+WHAT'S NEW IN VERSION 1.7
+a) If the total length of the directory plus file name path exceeded
+   64 bytes, memory corruption would occur. This has been corrected.
+
+WHAT'S NEW IN VERSION 1.6
+a) Files with a 'cprt' (copyright) tag are now processed correctly.
+   Previous versions of aacgain corrupted the metadata of files with a
+   copyright tag.
+b) AACGain now works on video or other files where the first audio track 
+   has a track number of other than 1. Previous versions required the
+   audio track to have a number of 1. AACGain will still only process
+   the first audio track found on a file. Thanks to Arthur Yarwood at
+   Sony Computer Entertainment Europe for this fix.
+
+WHAT'S NEW IN VERSION 1.5
+a) Running AACGain on Apple lossless or other unsupported file format 
+   resulted in a crash with an unhandled exception. This is now fixed.
+
+WHAT'S NEW IN VERSION 1.4
+a) Temporary files are created in the same directory as the input file.
+   Formerly they were created in the same directory that the program was run
+   in. This solves a problem only seen on Unix systems where the temporary 
+   file could not be renamed back to the original input filename, if the 
+   input file was located on a different filesystem from where the program 
+   was run. Windows users are unaffected by this problem and can continue to
+   use 1.3.
+
+WHAT'S NEW IN VERSION 1.3
+a) Always uses the /t (use temp file) option, even if it is not specified
+   on the command line. This resolves issues where processed files would
+   not play on the iPod Shuffle.
+b) Preserves original values of MP4 properties bufferSizeDB, maxBitrate and 
+   avgBitrate. Without this change, mpeg4ip/mp4vs was recalulating the
+   actual values of these parameters. This caused bitrate as displayed by
+   iTunes to change slightly, i.e. songs ripped at 320KB would display as
+   319KB.
+c) Incorporates recent changes to mp3gain which prevent crashes when
+   working with 48KB files on Linux.
+d) Source code directory structure was reorganized to be compatible with mp3gain 
+   CVS on sourceforge. Thanks to Glen Sawyer, the AACGain source code is now 
+   hosted on sourceforge's CVS repository as part of the mp3gain project.
+
+WHAT'S NEW IN VERSION 1.2
+a) Fixes compatibility issue with MP3GainGUI version 1.2.5 or 1.3.4.
+b) All temporary files created are erased.
+   
+WHAT'S NEW IN VERSION 1.1
+a) Multi-channel and mono files now work.
+b) Fixes compatibility issues with MP3GainGUI:
+   - /o option always outputs Album gain
+c) /f option is ignored for AAC files - see usage notes below.
+d) Uses portable versions of all library functions, and has been
+   successfully compiled under Linux. Thanks to Prakash Punnoor
+   for his help with this.
+   
+BUILDING AACGAIN FOR WINDOWS FROM SOURCE CODE
+
+MSVC++ solution and project files have been converted for Visual C++
+2010 Express Edition. The MVSC++ 2005 and 6.0 project and solution files
+are no longer being maintained. It is now required to use VC++ 2010 to
+build aacgain for Windows.
+
+In order to build AACGain for Windows, the following components are 
+required. You may download them from the links listed below:
+
+a) aacgain
+
+   Thanks to Glen Sawyer, aacgain source code is checked into the sourceforge
+   CVS repository as part of the mp3gain project. A CVS client is required.
+   See the instructions at http://sourceforge.net/cvs/?group_id=49979. The
+   commands to check out the aacgain source code are:
+   cvs -d:pserver:anonymous@mp3gain.cvs.sourceforge.net:/cvsroot/mp3gain login 
+   cvs -z3 -d:pserver:anonymous@mp3gain.cvs.sourceforge.net:/cvsroot/mp3gain co -P aacgain
+
+b) mp3gain
+   You may use either the zipped version 1.5.1 source code at
+   http://mp3gain.sourceforge.net/download.php or check out the code from
+   the latest CVS. The CVS commands to check out the mp3gain source code are:
+   cvs -d:pserver:anonymous@mp3gain.cvs.sourceforge.net:/cvsroot/mp3gain login
+   cvs -z3 -d:pserver:anonymous@mp3gain.cvs.sourceforge.net:/cvsroot/mp3gain co -P mp3gain
+   The latest version of aacgain was build from mp3gain source files from CVS
+   that were most recently modified on May 19 03:48:34 2010 UTC.
+   
+c) faad2
+   aacgain was built using the the FAAD2 release 2.7 dated 2009-02-10
+   downloaded from http://sourceforge.net/projects/faac/files/.
+   
+   Download any of the faad2-2.7 source files and expand the archive as a peer
+   to the aacgain directory. Rename its top-level directory to faad2.
+
+   Due to the way aacgain is programmed, using modified copies of faad2's
+   decoder.c and syntax.c, use of any earlier or later version of faad2
+   is not recommended.
+   
+d) mp4v2
+   As of version 1.9, aacgain uses the mp4v2 code found at
+   http://code.google.com/p/mp4v2/. aacgain is built using the mp4v2 r355
+   snapshot. aacgain uses the r355 snapshot, rather than the official
+   release 1.9.1, due to its use of iTMF tags.
+   
+   Download the tarball mp4v2-trunk-r355.tar.bz2, and expand the archive.
+   Rename its top level directory to mp4v2.
+   
+   Due to the patches described below, use of any earlier or later version
+   of mp4v2 is not recommended.
+   
+   A patch file mp4v2.patch is in the aacgain directory. This patch 
+   fixes two issues:
+
+   1) The first 2 groups of patches to mp4track.cpp remove code which
+       recomputes the maximum and average bitrates. If this code is not
+	   removed, a file with a nominal bitrate of 128KB may have its bitrate
+	   changed to something like 131287.
+
+   2) The last group in the patch to mp4track.cpp fixes a bug which prevents
+      iTunes music videos from being processed correctly. See the comments
+	  in the patch for details. I  reported this bug to the mp4v2 developers,
+	  and it is fixed in the latest mp4v2 svn. However, the Visual Studio project
+	  files in svn will not convert to VC++ Express, due to their use of features
+	  only in the full (paid) version of Visual Studio. Therefore, I am
+	  using the r355 tarball, and patching the bug myself.
+
+   cd to the aacgain directory where mp4v2.patch is located. Apply the patch with 
+   the command
+
+   patch -p0 <mp4v2.patch
+
+   If you don't care about the above issues you may skip applying this patch.
+   
+The components must be arranged in the following directory hierarchy:
+-- aacgain containing aacgain.sln/.vcprojx and source files
+-- faad2 
+   -- libfaad containing libfaad.sln/.vcproj
+-- mp4v2 (rename its top directory from what was in the tar.bz2 file)
+   -- vstudio9.0 containing mp4v2.sln
+   -- src and other directories
+-- mp3gain
+   -- mpglibDBL
+      
+Earlier versions of aacgain built mp4v2 as part of the aacgain
+solution. However, the mp4v2 from Google Code requires
+massive changes to its include paths to do this. It is much easier
+to build it separately, and then just link its library
+into the aacgain solution. In order to build libmp4v2,
+open mp4v2\vstudio9.0\mp4v2.sln in VC++2010. Allow the conversion to
+complete. Delete any projects marked "(unavailable)". Build the 
+"Debug Static" and "Release Static" configurations.
+
+Open faad2\libfaad\libfaad.sln in VC++2010 and allow the conversion to
+complete. Don't build libfaad at this point; it will be built as part of 
+aacgain.
+
+Open aacgain/aacgain.sln. There should be 3 projects in your solution:
+1. aacgain
+2. libfaad
+3. mp3gain
+
+Make the following changes to the libfaad project properties:
+a) Change the C++/Code generation/Runtime Library property for libfaad to
+   "Multi-threaded Debug (/MTd)" for debug build and "Multi-threaded (/MT)"
+   for release build. 
+b) Change the C++/Optimization/Whole Program Optimization property to
+   YES(/GL) for the release build only.
+c) Change the Librarian/General/Link Time Code Generation property
+   to YES(/LTCG) for the release build only.
+
+At this point, you may press F7 and cross your fingers:-)
+
+The aacgain.exe executable will be found in the aagain/Debug or 
+aacgain/Release directories.
+
+BUILDING AACGAIN FOR UNIX (LINUX/MAC OS X) FROM SOURCE CODE
+
+Thanks to Prakash Punoor, the source code is portable, 
+and has been compiled for Linux and Mac OS X. 
+
+I now have access to both Linux and Mac systems, so I have modified
+Prakash's scripts to build correctly with the latest code changes.
+
+See the file aacgain/linux/README.linux for detailed Linux/Mac build 
+instructions.
+
+HOW AACGAIN WORKS
+
+mp4v2 is used to parse the mp4/QuickTime file format, to
+read individual samples so that they can be passed to faad2, and to
+read and write replaygain metadata tags.
+
+faad2 is used to de-compress and decode the aac frames into linear 
+PCM for analysis by the replaygain algorithm.
+
+Files syntax.c and decoder.c are slightly modified versions of the
+corresponding files from faad2. The modifications allow the offsets
+and original values of the global_gain fields to be saved. Since the
+modified functions were declared static in libfaad, I am able to use
+my own modified copies of these functions without getting duplicate
+definition link errors.
+
+mp4v2 is used to apply any gain changes needed. It does this as follows: 
+a) creates a new audio track
+b) copyies the samples from the original audio track to the new track
+   with the global_gain fields appropriately modified
+c) deletes the original audio track
+d) modifies the trackId property of the new track, and the nextTrackId
+   property of the moov atom, to be the same as in the input file.
+
+aacgain.cpp is a wrapper for the above functionality.
+
+mp3gain.c has been modified to call aacgain when the symbol AACGAIN is
+defined. mp3gain versions 1.5 and later have this modification included.
+
+ACKNOWLEDGEMENTS
+
+I am a total newbie to digital audio, and I created AACGain primarily
+as a learning exercise. I couldn't have done it without the help of others:
+
+1. Thanks to the user community at hydrogenaudio.org and audiocoding.com,
+   especially Menno and Hans-Jürgen.
+2. Thanks to Bill May for helping me get started with mp4v2.
+3. Thanks to Prakash Punnoor, Hardloaf, Ben Allison, and Miguel Angel Alvarez
+   for their help with Linux and Mac.
+4. Last, but not least, thanks to Glen Sawyer for creating mp3gain.
+
+Dave Lasker
+dave@altosdesign.com

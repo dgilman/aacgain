@@ -1,0 +1,35 @@
+--- ../mp4v2/src/mp4track.cpp	2009-05-23 06:29:37.000000000 -0700
++++ ../mp4v2/src/mp4track.cpp	2010-07-28 16:00:37.171875000 -0700
+@@ -538,6 +538,10 @@
+         pBufferSizeProperty->SetValue(GetMaxSampleSize());
+     }
+ 
++//aacgain patch
++//retain original bitrates which are round numbers
++//don't use the values computed below, which are fractional
++#if 0 
+     MP4Integer32Property* pBitrateProperty;
+ 
+     if (m_pTrakAtom->FindProperty(
+@@ -551,6 +555,8 @@
+                 (MP4Property**)&pBitrateProperty)) {
+         pBitrateProperty->SetValue(GetAvgBitrate());
+     }
++#endif
++//end aacgain patch
+ }
+ 
+ // Process sdtp log and add sdtp atom.
+@@ -898,7 +904,11 @@
+ 
+     File* file;
+ 
+-    if( pUrlAtom->GetFlags() & 1 ) {
++    //patch from r390:
++    // make sure this is actually a url atom (somtimes it's "cios", like in iTunes videos) 
++    if( strcmp(pUrlAtom->GetType(), "url ") || 
++        pUrlAtom->GetFlags() & 1 ) {
++    //end patch from r390
+         file = NULL; // self-contained
+     }
+     else {

@@ -1,0 +1,57 @@
+aacgain Linux build instructions
+
+Based on Prakash Punnoor's Unix Build System
+
+This document describes how to build a statically-linked
+aacgain executable on a Unix-based system. It has been tested
+on Ubuntu 10.04 (Lucid) and Mac OS X 10.6.4 (Snow Leopard). 
+
+Note that aacgain/Makefile.am specifies
+   LDFLAGS = -static
+Due to the subclassing of mp4v2 C++ code, and use of faad2 internal
+interfaces, use of shared libraries is not recommended.
+
+Please refer to the main README file in the aacgain directory
+for more details.
+
+1) Extract required code into the following directory structure,
+   as described in the main README file:
+
+   <top_srcdir>
+      --aacgain
+         --linux
+      --mp3gain
+         --mpglibDBL
+      --faad2 (rename if necessary)
+         --libfaad
+      --mp4v2 (rename if necessary)
+
+2) Build libmp4v2 as follows:
+   cd <top_srcdir>/aacgain
+   patch -p0 <mp4v2.patch (optional but recommended, see main README for details)
+   cd <top_srcdir>/mp4v2
+   ./configure
+   make libmp4v2.la
+
+2) Build libfaad as follows:
+   cd <top_srcdir>/faad2
+   ./configure
+   cd libfaad
+   make
+
+3) Set up the build environment for aacgain as follows:
+   cd <top_srcdir>/aacgain/linux
+   chmod +x prepare.sh (sorry I am unable to make this file executable in CVS)
+   ./prepare.sh
+   This runs autoreconf to create the configure script, and applies a
+   required patch to mp3gain/mpglibDBL to allow it to #include the
+   uintXX_t types.
+
+4) Build aacgain as follows:
+   cd <top_srcdir>/aacgain/linux (or any other location you choose)
+   mkdir build && cd build (optional but recommended)
+   <top_srcdir>/configure
+   make
+
+5) The generated executable is build/aacgain/aacgain. Once compilation is
+   finished, you may reduce its size by running strip -s on it.
