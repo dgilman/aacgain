@@ -5,4 +5,7 @@ os:
 compiler:
    - clang
    - gcc
+env:
+   global:
+      - MAKEFLAGS="-j 2"
 script: bash ./build.sh
