@@ -15,8 +15,8 @@ while getopts ":tn" opt; do
 done
 
 echo "travis_fold:start:mp4v2"
-mkdir "$AACGAIN_ROOT/mp4v2" && cd "$AACGAIN_ROOT/mp4v2"
-wget -O - https://github.com/TechSmith/mp4v2/archive/2.1.0.tar.gz | tar xfz - --strip-components 1
+mkdir -p "$AACGAIN_ROOT/mp4v2" && cd "$AACGAIN_ROOT/mp4v2"
+curl -L https://github.com/TechSmith/mp4v2/archive/2.1.0.tar.gz | tar xfz - --strip-components 1
 if [ $AACGAIN_BUILD -eq 1 ] ; then
    ./configure
    make libmp4v2.la
@@ -24,8 +24,8 @@ fi
 echo "travis_fold:end:mp4v2"
 
 echo "travis_fold:start:faad2"
-mkdir "$AACGAIN_ROOT/faad2" && cd "$AACGAIN_ROOT/faad2"
-wget -O - https://downloads.sourceforge.net/faac/faad2-2.7.tar.bz2 | tar xfj - --strip-components 1
+mkdir -p "$AACGAIN_ROOT/faad2" && cd "$AACGAIN_ROOT/faad2"
+curl -L https://downloads.sourceforge.net/faac/faad2-2.7.tar.bz2 | tar xfj - --strip-components 1
 if [ $AACGAIN_BUILD -eq 1 ] ; then
    ./configure
    cd libfaad
