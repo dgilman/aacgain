@@ -284,14 +284,7 @@ aacgain/Release directories.
 
 BUILDING AACGAIN FOR UNIX (LINUX/MAC OS X) FROM SOURCE CODE
 
-Thanks to Prakash Punoor, the source code is portable, 
-and has been compiled for Linux and Mac OS X. 
-
-I now have access to both Linux and Mac systems, so I have modified
-Prakash's scripts to build correctly with the latest code changes.
-
-See the file aacgain/linux/README.linux for detailed Linux/Mac build 
-instructions.
+Run build.sh.  It will fetch mp4v2 and faad2 and build the whole thing for you.
 
 HOW AACGAIN WORKS
 

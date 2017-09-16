@@ -11,7 +11,7 @@ echo "travis_fold:end:mp4v2"
 
 echo "travis_fold:start:faad2"
 mkdir "$AACGAIN_ROOT/faad2" && cd "$AACGAIN_ROOT/faad2"
-wget -O - http://downloads.sourceforge.net/faac/faad2-2.7.tar.bz2 | tar xfj - --strip-components 1
+wget -O - https://downloads.sourceforge.net/faac/faad2-2.7.tar.bz2 | tar xfj - --strip-components 1
 ./configure
 cd libfaad
 make
