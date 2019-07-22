@@ -1323,6 +1323,7 @@ void fullUsage(char *progname) {
 		fprintf(stderr,"\t              album: a single gain change is applied to all files, so\n");
 		fprintf(stderr,"\t              their loudness relative to each other remains unchanged,\n");
 		fprintf(stderr,"\t              but the average album loudness is normalized)\n");
+    fprintf(stderr,"\t%ci <i> - use Track index i (defaults to 0, for first audio track in file)\n",SWITCH_CHAR);
 		fprintf(stderr,"\t%cm <i> - modify suggested MP3 gain by integer i\n",SWITCH_CHAR);
 		fprintf(stderr,"\t%cd <n> - modify suggested dB gain by floating-point n\n",SWITCH_CHAR);
 		fprintf(stderr,"\t%cc - ignore clipping warning when applying gain\n",SWITCH_CHAR);
@@ -1438,6 +1439,7 @@ int main(int argc, char **argv) {
 	int applyAlbum = 0;
 	int analysisTrack = 0;
 	char analysisError = 0;
+  int trackIndex = 0;
 	int fileStart;
 	int databaseFormat = 0;
 	int i;
@@ -1555,6 +1557,23 @@ int main(int argc, char **argv) {
 					}
 					fullUsage(argv[0]);
 					break;
+
+        case 'i':
+        case 'I':
+          if (argv[i][2] != '\0') {
+            trackIndex = atoi(argv[i]+2);
+          }
+          else {
+            if (i+1 < argc) {
+              trackIndex = atoi(argv[i+1]);
+              i++;
+              fileStart++;
+            }
+            else {
+              errUsage(argv[0]);
+            }
+          }
+          break;
 
                 case 'k':
                 case 'K':
@@ -1755,7 +1774,7 @@ int main(int argc, char **argv) {
 #ifdef AACGAIN
       //check for aac file; open it if found
       //note: we try to open aac even if /f (reckless)
-      if (aac_open(curfilename, UsingTemp, saveTime, &aacInfo[mainloop]) != 0)
+      if (aac_open(curfilename, UsingTemp, saveTime, trackIndex, &aacInfo[mainloop]) != 0)
       {
           //in case of any errors, don't continue processing so there is no risk of corrupting
           //a bad file
