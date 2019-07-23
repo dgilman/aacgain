@@ -22,7 +22,7 @@
 
 //external interface to aacgain.c
 
-#define AACGAIN_VERSION "1.9.0"
+#define AACGAIN_VERSION "1.9.1"
 
 #include "gain_analysis.h"
 
@@ -48,7 +48,7 @@ extern "C"
 {
 #endif
 
-int aac_open(char *mp4_file_name, int use_temp, int preserve_timestamp, AACGainHandle *gh);
+int aac_open(char *mp4_file_name, int use_temp, int preserve_timestamp, int track_index, AACGainHandle *gh);
 unsigned int aac_get_sample_rate(AACGainHandle gh);
 int aac_compute_gain(AACGainHandle gh, rg_t *peak, unsigned char *min_gain, 
                      unsigned char *max_gain, ProgressCallback reportProgress);

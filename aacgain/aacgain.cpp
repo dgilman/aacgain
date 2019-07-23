@@ -441,7 +441,7 @@ static int make_gain_adjustments(GainDataPtr gd, int left, int right)
 	return 0;
 }
 
-int aac_open(char *mp4_file_name, int use_temp, int preserve_timestamp, AACGainHandle *gh)
+int aac_open(char *mp4_file_name, int use_temp, int preserve_timestamp, int track_index, AACGainHandle *gh)
 {
     FILE* mp4_file;
     GainDataPtr gd;
@@ -507,15 +507,28 @@ int aac_open(char *mp4_file_name, int use_temp, int preserve_timestamp, AACGainH
 	MP4FileHandle fh = mp4_open_ro(gd, mp4_file_name);
 	if (fh)
 	{
-        if (MP4GetNumberOfTracks(fh, MP4_AUDIO_TRACK_TYPE) != 1)
+        int num_audio_tracks = MP4GetNumberOfTracks(fh, MP4_AUDIO_TRACK_TYPE);
+        if (num_audio_tracks == 0)
         {
-            fprintf(stderr, "Error: File must contain a single audio track.\n");
+            fprintf(stderr, "Error: File must contain at least one audio track.\n");
 			gd->abort = 1;
             return 1;
         }
 
-		/* Find the first audio track, store in GainData struct. */
-		gd->track = MP4FindTrackId(fh, 0, MP4_AUDIO_TRACK_TYPE);
+        /* Print a warning if there are multiple audio tracks */
+        if (num_audio_tracks > 1)
+        {
+            fprintf(stderr, "File contains %d audio tracks, using track index %d. (Use -i option to override)\n", num_audio_tracks, track_index);
+        }
+
+		/* Find the audio track given by track_index.  Store in GainData struct. */
+		gd->track = MP4FindTrackId(fh, track_index, MP4_AUDIO_TRACK_TYPE);
+        if (gd->track == MP4_INVALID_TRACK_ID)
+        {
+            fprintf(stderr, "Error: Audio track index %d is not found in file.\n", track_index);
+            gd->abort = 1;
+            return 1;
+        }
 
 		//check for Apple Lossless
 		if (MP4HaveTrackAtom(fh, gd->track, "mdia.minf.stbl.stsd.alac"))
