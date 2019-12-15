@@ -817,15 +817,21 @@ int aac_close(AACGainHandle gh)
         {
             //use MP4Optimize to undo the wasted space created by MP4File::Modify
             //send optimize output to a temp file "just in case"
-            MP4Optimize(gd->temp_name, temp_name);
-
-            //rename the temp file back to original name
-            int rc = remove(gd->mp4file_name);
-            if (rc == 0)
-                rc = rename(temp_name, gd->mp4file_name);
-            if (rc)
-                fprintf(stderr, "Error: attempt to create file %s failed. Your output file is named %s",
-                    gd->mp4file_name, temp_name);
+            if(MP4Optimize(gd->temp_name, temp_name)){
+                //rename the temp file back to original name
+                int rc = remove(gd->mp4file_name);
+                if (rc == 0)
+                    rc = rename(temp_name, gd->mp4file_name);
+                if (rc)
+                    fprintf(stderr, "Error: attempt to create file %s failed. Your output file is named %s",
+                        gd->mp4file_name, temp_name);
+            }
+            else{
+                //Optimize failed, keep the originals and remove temp files.
+                //The unoptimized temp file does not play in the app I tried it with, so you will not want it anyway.
+                fprintf(stderr, "Error: attempt to optimize file %s failed. The file was not modified.", gd->mp4file_name);
+                remove(temp_name); //Probably does not exist, but no harm in trying to remove it.
+            }
             free((void*)temp_name);
         }
         remove(gd->temp_name);
