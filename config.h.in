@@ -1,0 +1,9 @@
+#define aacgain_VERSION_MAJOR @aacgain_VERSION_MAJOR@
+#define aacgain_VERSION_MINOR @aacgain_VERSION_MINOR@
+#define aacgain_VERSION_PATCH @aacgain_VERSION_PATCH@
+#define AACGAIN_VERSION "@aacgain_VERSION_MAJOR@.@aacgain_VERSION_MINOR@.@aacgain_VERSION_PATCH@"
+
+#cmakedefine HAVE_INTTYPES_H @HAVE_INTTYPES_H@
+#cmakedefine HAVE_STDINT_H @HAVE_STDINT_H@
+#cmakedefine STDC_HEADERS @STDC_HEADERS@
+

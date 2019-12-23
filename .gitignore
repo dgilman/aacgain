@@ -1,39 +1,54 @@
-*.o
-*.lo
-*.swp
-faad2/
-mp4v2/
+config.h
+3rdparty/*-prefix/
+3rdparty/bin/
+3rdparty/include/
+3rdparty/share/
 
-Makefile
-Makefile.in
-aacgain/.deps/
-aacgain/Makefile
-aacgain/Makefile.in
-aacgain/aacgain
-aclocal.m4
-autom4te.cache/
-compile
-config.guess
-config.log
-config.status
-config.sub
-configure
-depcomp
-install-sh
-libtool
-ltmain.sh
-m4/
-missing
-mp3gain/.deps/
-mp3gain/.libs/
-mp3gain/Makefile
-mp3gain/Makefile.in
-mp3gain/libmp3gain.la
-mp3gain/mpglibDBL/.deps/
-mp3gain/mpglibDBL/.libs/
-mp3gain/mpglibDBL/Makefile
-mp3gain/mpglibDBL/Makefile.in
-mp3gain/mpglibDBL/config.h
-mp3gain/mpglibDBL/config.h.in
-mp3gain/mpglibDBL/libmpglib.la
-mp3gain/mpglibDBL/stamp-h1
+# Out-of-source build dir
+build
+
+# Compiled Object files
+**/.DS_Store
+*.slo
+*.lo
+*.o
+*.obj
+*.swp
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+**/cmake-build-debug
+**/CMakeCache.txt
+**/cmake_install.cmake
+**/install_manifest.txt
+**/CMakeFiles/
+**/CTestTestfile.cmake
+**/Makefile
+**/*.cbp
+**/CMakeScripts
+**/compile_commands.json
+**/*.vcxproj*
+**/*.sln*
+.vs
