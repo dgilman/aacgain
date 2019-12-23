@@ -60,7 +60,7 @@ extern "C"
 
 extern GainDataPtr theGainData;
 
-void* NEAACDECAPI aacgainDecode(void *hDecoder,
+NEAACDECAPI void* aacgainDecode(void *hDecoder,
                                 void *hInfo,
                                 unsigned char *buffer,
                                 unsigned long buffer_size);

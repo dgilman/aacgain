@@ -53,6 +53,7 @@
 #ifdef AACGAIN
 #include "aacgain.h"
 #endif
+#include "config.h"
 
 #ifndef WIN32
 #undef asWIN32DLL

@@ -799,7 +799,7 @@ static void create_channel_config(NeAACDecStruct *hDecoder, NeAACDecFrameInfo *h
     }
 }
 
-void* NEAACDECAPI aacgainDecode(void *hpDecoder,
+NEAACDECAPI void* aacgainDecode(void *hpDecoder,
                                  void *hInfo,
                                  unsigned char *buffer,
                                  unsigned long buffer_size)
