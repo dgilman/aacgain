@@ -11,13 +11,17 @@ build_script:
 test_script:
   - C:\Python38\python.exe tests\test.py build\aacgain\Release\aacgain.exe
 
-before_deploy:
-  - cmake.exe --build build --target install
-  - copy "C:\Program Files\aacgain\aacgain.exe" aacgain-2.0.0-windows-amd64.exe
+after_build:
+  - copy build\aacgain\Release\aacgain.exe build\aacgain\Release\aacgain-2.0.0-windows-amd64.exe
+
+artifacts:
+  - path: 'build\aacgain\Release\aacgain-*.exe'
+    name: aacgain-exe
+    type: file
 
 deploy:
   - provider: GitHub
-    artifact: aacgain-*.exe
+    artifact: aacgain-exe
     draft: false
     auth_token:
       secure: efNJ/b8h3rXqahkooeZS+I4N/1DJIOgg8ek1X/sjKC+8f0Vgs+9Yy+vrR6f1t96X

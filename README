@@ -17,7 +17,7 @@
 ** Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 **/
 
-AACGAIN VERSION 1.9
+AACGAIN VERSION 2.0.0
 
 AACgain is a modification to Glen Sawyer's mp3gain, to support AAC 
 (mp4/m4a/QuickTime) files as well as mp3 files. If you are not familiar with
@@ -81,6 +81,14 @@ You may email me questions, but there is no guarantee of a response.
 If you have what you believe to be a valid .m4a/.mp4 file that is 
 not processed correctly by aacgain, please attach it to your email.
 I do not support the original mp3gain code.
+
+WHAT'S NEW IN VERSION 2.0
+a) Fixed a bug where mp4 files would be silently deleted on error.
+   Thanks to Sappharad for the fix. http://www.sappharad.com/
+b) Add support for files with multiple audio tracks.
+   Thanks to Carter Thaxton for the fix.
+a) Rewrote the build system
+b) Updated faad2 to 2.9.1, mp4v2 to 3.0.4
 
 WHAT'S NEW IN VERSION 1.9
 a) Fixed a bug in mp4v2 which caused iTunes music video files
@@ -165,126 +173,6 @@ c) /f option is ignored for AAC files - see usage notes below.
 d) Uses portable versions of all library functions, and has been
    successfully compiled under Linux. Thanks to Prakash Punnoor
    for his help with this.
-   
-BUILDING AACGAIN FOR WINDOWS FROM SOURCE CODE
-
-MSVC++ solution and project files have been converted for Visual C++
-2010 Express Edition. The MVSC++ 2005 and 6.0 project and solution files
-are no longer being maintained. It is now required to use VC++ 2010 to
-build aacgain for Windows.
-
-In order to build AACGain for Windows, the following components are 
-required. You may download them from the links listed below:
-
-a) aacgain
-
-   Thanks to Glen Sawyer, aacgain source code is checked into the sourceforge
-   CVS repository as part of the mp3gain project. A CVS client is required.
-   See the instructions at http://sourceforge.net/cvs/?group_id=49979. The
-   commands to check out the aacgain source code are:
-   cvs -d:pserver:anonymous@mp3gain.cvs.sourceforge.net:/cvsroot/mp3gain login 
-   cvs -z3 -d:pserver:anonymous@mp3gain.cvs.sourceforge.net:/cvsroot/mp3gain co -P aacgain
-
-b) mp3gain
-   You may use either the zipped version 1.5.1 source code at
-   http://mp3gain.sourceforge.net/download.php or check out the code from
-   the latest CVS. The CVS commands to check out the mp3gain source code are:
-   cvs -d:pserver:anonymous@mp3gain.cvs.sourceforge.net:/cvsroot/mp3gain login
-   cvs -z3 -d:pserver:anonymous@mp3gain.cvs.sourceforge.net:/cvsroot/mp3gain co -P mp3gain
-   The latest version of aacgain was build from mp3gain source files from CVS
-   that were most recently modified on May 19 03:48:34 2010 UTC.
-   
-c) faad2
-   aacgain was built using the the FAAD2 release 2.7 dated 2009-02-10
-   downloaded from http://sourceforge.net/projects/faac/files/.
-   
-   Download any of the faad2-2.7 source files and expand the archive as a peer
-   to the aacgain directory. Rename its top-level directory to faad2.
-
-   Due to the way aacgain is programmed, using modified copies of faad2's
-   decoder.c and syntax.c, use of any earlier or later version of faad2
-   is not recommended.
-   
-d) mp4v2
-   As of version 1.9, aacgain uses the mp4v2 code found at
-   http://code.google.com/p/mp4v2/. aacgain is built using the mp4v2 r355
-   snapshot. aacgain uses the r355 snapshot, rather than the official
-   release 1.9.1, due to its use of iTMF tags.
-   
-   Download the tarball mp4v2-trunk-r355.tar.bz2, and expand the archive.
-   Rename its top level directory to mp4v2.
-   
-   Due to the patches described below, use of any earlier or later version
-   of mp4v2 is not recommended.
-   
-   A patch file mp4v2.patch is in the aacgain directory. This patch 
-   fixes two issues:
-
-   1) The first 2 groups of patches to mp4track.cpp remove code which
-       recomputes the maximum and average bitrates. If this code is not
-	   removed, a file with a nominal bitrate of 128KB may have its bitrate
-	   changed to something like 131287.
-
-   2) The last group in the patch to mp4track.cpp fixes a bug which prevents
-      iTunes music videos from being processed correctly. See the comments
-	  in the patch for details. I  reported this bug to the mp4v2 developers,
-	  and it is fixed in the latest mp4v2 svn. However, the Visual Studio project
-	  files in svn will not convert to VC++ Express, due to their use of features
-	  only in the full (paid) version of Visual Studio. Therefore, I am
-	  using the r355 tarball, and patching the bug myself.
-
-   cd to the aacgain directory where mp4v2.patch is located. Apply the patch with 
-   the command
-
-   patch -p0 <mp4v2.patch
-
-   If you don't care about the above issues you may skip applying this patch.
-   
-The components must be arranged in the following directory hierarchy:
--- aacgain containing aacgain.sln/.vcprojx and source files
--- faad2 
-   -- libfaad containing libfaad.sln/.vcproj
--- mp4v2 (rename its top directory from what was in the tar.bz2 file)
-   -- vstudio9.0 containing mp4v2.sln
-   -- src and other directories
--- mp3gain
-   -- mpglibDBL
-      
-Earlier versions of aacgain built mp4v2 as part of the aacgain
-solution. However, the mp4v2 from Google Code requires
-massive changes to its include paths to do this. It is much easier
-to build it separately, and then just link its library
-into the aacgain solution. In order to build libmp4v2,
-open mp4v2\vstudio9.0\mp4v2.sln in VC++2010. Allow the conversion to
-complete. Delete any projects marked "(unavailable)". Build the 
-"Debug Static" and "Release Static" configurations.
-
-Open faad2\libfaad\libfaad.sln in VC++2010 and allow the conversion to
-complete. Don't build libfaad at this point; it will be built as part of 
-aacgain.
-
-Open aacgain/aacgain.sln. There should be 3 projects in your solution:
-1. aacgain
-2. libfaad
-3. mp3gain
-
-Make the following changes to the libfaad project properties:
-a) Change the C++/Code generation/Runtime Library property for libfaad to
-   "Multi-threaded Debug (/MTd)" for debug build and "Multi-threaded (/MT)"
-   for release build. 
-b) Change the C++/Optimization/Whole Program Optimization property to
-   YES(/GL) for the release build only.
-c) Change the Librarian/General/Link Time Code Generation property
-   to YES(/LTCG) for the release build only.
-
-At this point, you may press F7 and cross your fingers:-)
-
-The aacgain.exe executable will be found in the aagain/Debug or 
-aacgain/Release directories.
-
-BUILDING AACGAIN FOR UNIX (LINUX/MAC OS X) FROM SOURCE CODE
-
-Run build.sh.  It will fetch mp4v2 and faad2 and build the whole thing for you.
 
 HOW AACGAIN WORKS
 

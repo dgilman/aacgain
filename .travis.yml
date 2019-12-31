@@ -1,5 +1,5 @@
-sudo: required
 language: cpp
+
 os:
    - linux
    - osx
@@ -12,21 +12,15 @@ script:
    - cd build; make
    - cd $TRAVIS_BUILD_DIR; python3 tests/test.py build/aacgain/aacgain
 before_deploy:
-   - cmake --build build --target install
-   - cp /usr/local/bin/aacgain aacgain-2.0.0-${TRAVIS_OS_NAME}-${TRAVIS_CPU_ARCH}
-jobs:
-  include:
-    - stage: deploy
-      if: tag IS present
-      compiler:
-        - gcc
-      os:
-        - linux
-        - osx
-      deploy:
-        skip_cleanup: true
-        provider: releases
-        api_key:
-          secure: 0q1PGXpaGEEcUilPcMbrHkuCR8GhlloVSsCRwox2Xfhe1rrAV1fGTAUF5m0zetXPY5A8h+aFMotEhEkH6tMlcJYOLqWhBMmWidVM6cdimlSP6OmCP/zHbJdoAFLXaGHtdUAnrdkSnm32H9sYzcfOtgaDCyQ20oc1hL1IxHQveCS1//i3gjjBMq7UT4T4MEoq7//vk3FwflzaoTRJ2ydYyoweWR7qy1PcVys3Q9mp9FYUxz2QZYgkF3YhWQXWFbV29VeXxDAyS7hcXC7V66bKT2rxVDUzu6rNqMjPstzWpRr5Kh9Orsp8Xsuox1cG6uAynXoTC0XqFDKP4J1sZruJ6xt10CNS4YpEcZnyRGOYX93c31ueryTJnQ+GEdl3rxbuswtkqccVqRowZgEFodHFrfbnjisdOH4kVzMGi/DjySr7noD7Y4OaX8+IENDVgt2p4KsazhXhUB6rJ/iOJHBedDCSLz9mIa14iBuU3yUpSUPXCdScc3TnloHCGGqq5Gxy7iu5QNhGfNCq4ErUFOYWcob8ETsoWCG1+nbDStECCcCr6kwMU/8B2ThmbDHO41YVDx9VjGXnnY5nfJNdHtwKa5wr1FQq3ROb1HM6jjlGNC8IF+jKzMs5mmFNSaM/r8D/cs2wE/IymH+1l+PXSjOw4Xulm4GdioYxFWyFzpIF13M=
-        on:
-          tags: true
+   - strip build/aacgain/aacgain
+   - cp build/aacgain/aacgain build/aacgain/aacgain-2.0.0-${TRAVIS_OS_NAME}-${TRAVIS_CPU_ARCH}
+deploy:
+   - provider: releases
+     api_key:
+       secure: 0q1PGXpaGEEcUilPcMbrHkuCR8GhlloVSsCRwox2Xfhe1rrAV1fGTAUF5m0zetXPY5A8h+aFMotEhEkH6tMlcJYOLqWhBMmWidVM6cdimlSP6OmCP/zHbJdoAFLXaGHtdUAnrdkSnm32H9sYzcfOtgaDCyQ20oc1hL1IxHQveCS1//i3gjjBMq7UT4T4MEoq7//vk3FwflzaoTRJ2ydYyoweWR7qy1PcVys3Q9mp9FYUxz2QZYgkF3YhWQXWFbV29VeXxDAyS7hcXC7V66bKT2rxVDUzu6rNqMjPstzWpRr5Kh9Orsp8Xsuox1cG6uAynXoTC0XqFDKP4J1sZruJ6xt10CNS4YpEcZnyRGOYX93c31ueryTJnQ+GEdl3rxbuswtkqccVqRowZgEFodHFrfbnjisdOH4kVzMGi/DjySr7noD7Y4OaX8+IENDVgt2p4KsazhXhUB6rJ/iOJHBedDCSLz9mIa14iBuU3yUpSUPXCdScc3TnloHCGGqq5Gxy7iu5QNhGfNCq4ErUFOYWcob8ETsoWCG1+nbDStECCcCr6kwMU/8B2ThmbDHO41YVDx9VjGXnnY5nfJNdHtwKa5wr1FQq3ROb1HM6jjlGNC8IF+jKzMs5mmFNSaM/r8D/cs2wE/IymH+1l+PXSjOw4Xulm4GdioYxFWyFzpIF13M=
+     file: build/aacgain/aacgain-*
+     file_glob: true
+     skip_cleanup: true
+     on:
+       tags: true
+       condition: $TRAVIS_COMPILER = gcc
