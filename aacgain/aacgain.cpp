@@ -311,8 +311,9 @@ static int parse_mp4_file(GainDataPtr gd, ProgressCallback report_progress, int 
         }
 
 		//ignore error 4 (scalefactor out of range) which seems to happen on some tracks
+        //ignore error 32 (bitstream value not allowed by specification) which also seems to happen on some otherwise good tracks
 		//other errors are fatal
-        if ((frameInfo.error > 0) && (frameInfo.error!=4))
+        if ((frameInfo.error > 0) && (frameInfo.error!=4) && (frameInfo.error!=32))
         {
             fprintf(stderr, "Error: invalid file format %s, code=%d\n",
                 gd->mp4file_name, frameInfo.error);
